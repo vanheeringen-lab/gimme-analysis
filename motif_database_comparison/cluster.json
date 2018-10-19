@@ -1,0 +1,13 @@
+{
+    "__default__" :
+    {
+        "time" : "00:10:00",
+        "N" : 1,
+        "partition" : "short"
+    },
+    "roc" :
+    {
+        "time" : "00:30:00",
+        "partition" : "normal"
+    }
+}

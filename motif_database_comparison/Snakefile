@@ -1,0 +1,104 @@
+import pandas as pd
+
+configfile: "config.yaml"
+
+IDS, = glob_wildcards(expand("{peak_dir}", peak_dir=config["peak_dir"])[0] + "/{id}.bed.gz")
+DBS, = glob_wildcards(expand("{pwm_dir}", pwm_dir=config["pwm_dir"])[0] + "/{db}.pwm")
+
+localrules: all, final_tables, final_roc, bg_bed, fg, bg, figures
+
+rule all:
+    input: 
+        "out/final.ROC_AUC.table.txt",
+#        "out/final.PR_AUC.table.txt",
+        "out/final.Enr_1FPR.table.txt",
+        "out/final.Recall_10FDR.table.txt",
+        "out/figure3a.png",
+        "out/figure3b.png",
+
+rule figures:
+    input:  
+        "out/final.Recall_10FDR.table.txt", 
+        "out/final.ROC_AUC.table.txt",
+#        "out/final.PR_AUC.table.txt",
+    output: "out/figure3a.png", "out/figure3b.png"
+    conda: "envs/plot.yaml"
+    shell: """
+           python scripts/figure3_comparison_motif_databases.py {config[reference]} out/ 
+           """
+rule final_tables:
+    input:
+        expand("out/roc/{db}.{{metric}}.table.txt", db=DBS)
+    output:
+        "out/final.{metric}.table.txt"
+    run:
+        df = pd.read_table(input[0], index_col=0)
+        for x in input[1:]:
+            df = df.join(pd.read_table(x, index_col=0))
+        df.to_csv(output[0], sep="\t")
+
+rule final_roc:
+    input:
+        expand("out/roc/{id}_roc.{{db}}.txt", id=IDS)
+    output:
+        "out/roc/{db}.{metric}.table.txt"
+    run:
+        remap = {
+                    "ROC AUC":"ROC_AUC", 
+                    "PR AUC":"PR_AUC", 
+                    'Recall at 10% FDR':'Recall_10FDR', 
+                    'Enr. at 1% FPR':'Enr_1FPR'
+                    }
+        with open(output[0], "w") as f:
+            f.write("\t{}\n".format(wildcards.db))
+            for fname in input:
+                name = os.path.split(fname)[-1].split("_")[0]
+                df = pd.read_table(fname,
+                    index_col=0).rename(columns=remap)
+                m = df.max()[wildcards.metric]
+                f.write("{}\t{}\n".format(name, m))
+
+rule roc:
+    input:
+        fg = "out/fa/{id}.fa",
+        bg = "out/fa/{id}.bg.fa",
+        pwm = "data/pwm/{db}.pwm"
+    output:
+        "out/roc/{id}_roc.{db}.txt"
+    threads: 24
+    conda: "envs/gimme.yaml"
+    shell: """
+    set +u
+        echo 'starting gimme roc {input.fg} {input.pwm}'
+    gimme roc {input.fg} {input.bg} -p {input.pwm} -N 24 > {output}
+    set -u
+    """
+
+rule fg:
+   input:  expand("{peak_dir}/{{id}}.bed.gz", peak_dir=config["peak_dir"])
+   output: "out/fa/{id}.fa"
+   conda: "envs/bedtools.yaml"
+   shell:  """
+       zcat {input} | shuf | tail -n {config[maxpeaks]} | sort -k1,1 -k2g,2 | bedtools getfasta -fi {config[genome]} -fo {output} -bed -
+    """
+
+rule bg_bed:
+    input:  expand("{peak_dir}/{{id}}.bed.gz", peak_dir=config["peak_dir"])
+    output:  "out/bed/bg.factor.{id}.bed"
+    conda: "envs/bedtools.yaml"
+    shell:  """
+         gaps=`mktemp`
+    zcat {input} | cut -f1-3 > $gaps
+    cat {config[gaps]} | cut -f1-3 >> $gaps
+    bedtools shuffle -seed 42 -i {input} -excl $gaps -g {config[genome]}.sizes > {output} 
+         """
+
+rule bg:
+    #input:  "peaks/{id}_merged_peaks.bg.bed"
+    input:  "out/bed/bg.factor.{id}.bed"
+    output: "out/fa/{id}.bg.fa"
+    conda: "envs/bedtools.yaml"
+    shell:  """
+         cat {input}  | tail -n {config[maxpeaks]} | bedtools getfasta -fi {config[genome]} -fo {output} -bed -
+         """
+

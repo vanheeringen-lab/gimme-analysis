@@ -1,0 +1,6 @@
+gaps:  "/data/genomes/hg38/hg38.gaps.bed"
+genome: "/data/genomes/hg38/hg38.fa"
+maxpeaks: 500
+peak_dir: "data/peaks.remap.rela"
+pwm_dir: "data/pwm.gimme"
+reference: "gimme.vertebrate.v4.0"
