@@ -3,7 +3,7 @@ import pandas as pd
 configfile: "config.yaml"
 
 IDS, = glob_wildcards(expand("{peak_dir}", peak_dir=config["peak_dir"])[0] + "/{id}.bed.gz")
-DBS, = glob_wildcards(expand("{pwm_dir}", pwm_dir=config["pwm_dir"])[0] + "/{db}.pwm")
+DBS, = glob_wildcards(expand("{pfm_dir}", pfm_dir=config["pfm_dir"])[0] + "/{db}.pfm")
 
 localrules: all, final_tables, final_roc, bg_bed, fg, bg, figures
 
@@ -62,15 +62,15 @@ rule roc:
     input:
         fg = "out/fa/{id}.fa",
         bg = "out/fa/{id}.bg.fa",
-        pwm = "data/pwm/{db}.pwm"
+        pfm = "data/pfm/{db}.pfm"
     output:
         "out/roc/{id}_roc.{db}.txt"
     threads: 24
     conda: "envs/gimme.yaml"
     shell: """
     set +u
-        echo 'starting gimme roc {input.fg} {input.pwm}'
-    gimme roc {input.fg} {input.bg} -p {input.pwm} -N 24 > {output}
+        echo 'starting gimme roc {input.fg} {input.pfm}'
+    gimme roc {input.fg} {input.bg} -p {input.pfm} -N 24 > {output}
     set -u
     """
 
