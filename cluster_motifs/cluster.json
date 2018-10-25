@@ -1,0 +1,18 @@
+{
+    "__default__" :
+    {
+        "time" : "00:10:00",
+        "N" : 1,
+        "partition" : "short"
+    },
+    "cluster_chunk" :
+    {
+        "time" : "01:30:00",
+        "partition" : "normal"
+    },
+    "chunk_table" :
+    {
+        "time" : "01:30:00",
+        "partition" : "normal"
+    },
+}

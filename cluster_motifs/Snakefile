@@ -1,0 +1,56 @@
+configfile: "config.yaml"
+localrules: all,distance_table,cluster_table,silhouette
+
+count = 0
+for line in open(config["pwm"]):
+    if line[0] == ">":
+        count += 1
+
+CHUNKS = range(1, count // int(config["chunksize"]) + 2)
+
+rule all:
+  input: 
+    "out/cluster_table.seqcor.ed0.conn1.txt.gz",
+
+rule silhouette:
+  input:
+    "out/cluster_table.{metric}.ed{use_ed}.txt",
+    "out/distance_table.{metric}.txt"
+  output:
+    "out/silhouette_width.{metric}.ed{use_ed}.png",
+#    "out/silhouette_width_direct.{metric}.png"
+  threads: 32
+  script:
+    "scripts/plot_silhouette.py"
+
+rule cluster_table:
+  input:
+    "out/distance_table.{metric}.txt.gz"
+  output:
+    "out/tmp/cluster.{metric}.ed{use_ed}.conn{use_conn}.txt.gz"  
+  conda:
+    "envs/gimme.yaml"
+  shell:
+    """
+    python scripts/make_cluster_table.py {input} {wildcards.use_conn} {wildcards.use_ed} | gzip > {output}
+    """
+rule distance_table:
+  input:
+    expand("out/tmp/distance_table.{{metric}}.{chunk}.txt", chunk=CHUNKS)
+  output:
+    "out/distance_table.{metric}.txt.gz"
+  script:
+    "scripts/combine_tables.py"
+
+rule chunk_table:
+  input:
+    config["pwm"]
+  output:
+    "out/tmp/distance_table.{metric}.{chunk}.txt"
+  threads: 24
+  conda:
+    "envs/gimme.yaml"
+  shell:
+    """
+    python scripts/distance_chunk.py {input} {output} {config[chunksize]} {wildcards.chunk} {wildcards.metric}
+    """

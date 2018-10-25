@@ -1,0 +1,11 @@
+name: cluster_workflow
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+dependencies:
+  - python=3.5
+  - snakemake
+  - pandas
+  - scikit-learn
+  - seaborn
