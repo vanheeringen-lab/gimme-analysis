@@ -1,0 +1,13 @@
+name: de_novo_benchmark
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+dependencies:
+  - python=3.5
+  - bedtools
+  - snakemake
+  - pandas
+  - seaborn
+  - gimmemotifs
+  - fastcluster
