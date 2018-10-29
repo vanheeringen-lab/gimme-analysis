@@ -1,6 +1,6 @@
 gaps:  "/data/genomes/hg38/hg38.gaps.bed"
 genome: "/data/genomes/hg38/hg38.fa"
-maxpeaks: 300
-peak_dir: "data/remap.test"
+maxpeaks: 5000
+peak_dir: "data/remap"
 pfm_dir: "data/pfm"
-reference: "gimme.vertebrate.v4.0"
+reference: "gimme.vertebrate.v5.0"

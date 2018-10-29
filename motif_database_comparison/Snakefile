@@ -13,18 +13,18 @@ rule all:
 #        "out/final.PR_AUC.table.txt",
         "out/final.Enr_1FPR.table.txt",
         "out/final.Recall_10FDR.table.txt",
-        "out/figure3a.png",
-        "out/figure3b.png",
+        "out/figure1a.png",
+        "out/figure1b.png",
 
 rule figures:
     input:  
         "out/final.Recall_10FDR.table.txt", 
         "out/final.ROC_AUC.table.txt",
 #        "out/final.PR_AUC.table.txt",
-    output: "out/figure3a.png", "out/figure3b.png"
+    output: "out/figure1a.png", "out/figure1b.png"
     conda: "envs/plot.yaml"
     shell: """
-           python scripts/figure3_comparison_motif_databases.py {config[reference]} out/ 
+           python scripts/figure1_comparison_motif_databases.py {config[reference]} out/ 
            """
 rule final_tables:
     input:
