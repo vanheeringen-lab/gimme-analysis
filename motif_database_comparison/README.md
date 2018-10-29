@@ -1,22 +1,26 @@
-Configuration
-=============
+# Configuration
 
 The file `config.yaml` contains the configuration:
 
 ``` 
 gaps:  "data/hg38.gaps.bed"
 genome: "/data/genomes/hg38/hg38.fa"
-maxpeaks: 5000
-peak_dir: "test_peaks"
-reference: "gimme.vertebrate.v3.1"
+maxpeaks: 100
+peak_dir: "data/remap.test"
+pfm_dir: "data/pfm"
+reference: "gimme.vertebrate.v5.0"
 ```
 
-Please update this where necessary. 
-For the ENCODE peaks you will need to have hg19 installed (shameless plug: use [genomepy](https://github.com/simonvh/genomepy)).
-The `peak_dir` is set to `test_peaks` by default. 
-You can check this to see if the workflow works. 
-The directory `peaks` contains all peaks, but this workflow will take a while!
-The `reference` determines which motif database will be used as a reference for figure3b.png.
+You will need to have the hg38 genome FASTA file available (shameless plug: use [genomepy](https://github.com/simonvh/genomepy)).
+The `peak_dir` is set to `data/remap.test`. This is a small data set to check this to see if the workflow works. The variable `maxpeaks` selects the number of peaks to use (we used 5000 in the manuscript).
+Use the script `scripts/download_remap_peaks.sh` to download all the remap peaks to the directory `data/remap`.
+All motif `.pfm` in `data/pfm` will be included for comparison. 
+The `reference` determines which motif database will be used as a reference for figure3a.png.
+
+When the workflow is finished, the directory `out/` will contain several
+`final.*.txt` files that contain all the metrics.
+
+# Run
 
 Install snakemake using conda:
 
@@ -24,13 +28,16 @@ Install snakemake using conda:
 conda install snakemake
 ```
 
-Dry run! 
+Dry run: 
 
 ```
 snakemake -n
 ```
 
-Full run.
+Full run:
 ``` 
-snakemake --use-conde
+snakemake --use-conda
 ``` 
+
+See `cluster.json` and the script `submit_snakemake.sh` for an example on how to
+run the workflow on a cluster (SLURM in this case).

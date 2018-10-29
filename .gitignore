@@ -1,1 +1,2 @@
+motif_database_comparison/data/**/*gz
 **/.snakemake/
