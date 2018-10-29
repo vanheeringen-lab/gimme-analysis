@@ -1,7 +1,5 @@
 # Three examples of using GimmeMotifs
 
-This repository holds the analysis code for the results in the following manuscript:
-
 This repository contains the analysis code of the manuscript describing the 2018 release of GimmeMotifs, an analysis framework for transcription factor motif analysis. The manuscript is available on [biorRxiv](TODO) as a preprint and can be cited as:
 
 > [**GimmeMotifs: an analysis framework for transcription factor motif analysis**](TODO) <br>
