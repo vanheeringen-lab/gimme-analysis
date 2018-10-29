@@ -5,4 +5,4 @@
 
 We evaluated nine different TF motif databases using ChIP-seq peaks from [ReMap](http://pedagogix-tagc.univ-mrs.fr/remap/). 
 
-For the worklow, see the [README](motif_database_comparison/README.md).
+For the workflow, see the [motif_database_comparison](motif_database_comparison).
