@@ -21,3 +21,7 @@ For the workflow see [de_novo_benchmark](de_novo_benchmark).
 ## Motif activity in hematopoietic enhancers
 
 The analysis is detailed in [this notebook](UPDATE_ME).
+
+## GimmeMotifs vertebrate v5.0
+
+For pipeline that was used to create the clustered, non-redundant motif database GimmeMotifs vertebrate v5.0 can be found here: [cluster_motifs](cluster_motifs).
