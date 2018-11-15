@@ -42,8 +42,8 @@ def factors2label(factors, anno, col="Family_Name"):
 pfmfile = "data/20181017.all.pfm"
 clusterfile = "out/cluster_table.seqcor.ed0.conn1.txt.gz"
 version = "5.0"
-outname = "gimme.vertebrate.v{}".format(version)
-k = 1600
+outname = "out/gimme.vertebrate.v{}".format(version)
+k = 1900
 tf_info = "/data/cis-bp-1.02/TF_Information_all_motifs.txt"
 
 # Get motif dir from the GimmeMotifs installation
@@ -74,6 +74,7 @@ sys.stderr.write(str(k) + "\n")
 seen_line = {}
 with open("{}.pfm".format(outname), "w") as out:
     with open("{}.motif2factors.txt".format(outname), "w") as m2f_out:
+        print("Motif\tFactor\tEvidence\tCurated", file=m2f_out)
         for cluster in range(k):
             if cluster % 10 == 0:
                 sys.stderr.write("{}\n".format(cluster))
