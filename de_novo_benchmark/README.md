@@ -4,6 +4,17 @@ Configuration
 The file `config.yaml` contains the configuration:
 
 ``` 
+# Reference genome
+genome: "/data/genomes/hg19/hg19.fa"
+# Top peaks to use for de novo motif search
+maxpeaks: 5000
+# size of region to look for motifs
+size: 100
+# File containing http links to bb peak files
+peak_file: "data/test_peaks.txt"
+# Which de novo motif prediction tools to compare
+#tools: MDmodule,Homer,BioProspector,MEME,MEMEW,GADEM,MotifSampler,trawler,Improbizer,Posmo,ChIPMunk,AMD,HMS,XXmotif,Weeder
+tools: MDmodule,Homer,BioProspector,ChIPMunk
 ```
 
 Please update this where necessary. 
