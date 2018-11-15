@@ -1,7 +1,16 @@
 # Reproduce the final steps
 
-You can download intermediate files at Zenodo: DOI LINK. Put both of these files in the `out/` directory. 
-Download the CIS-BP TF information: http://cisbp.ccbr.utoronto.ca/data/1.02/DataFiles/Bulk_downloads/EntireDataset/TF_Information_all_motifs.txt.zip. Unzip the file.
+You can download intermediate files at Zenodo ([10.5281/zenodo.1488638](https://doi.org/10.5281/zenodo.1488638)): 
+
+* [cluster_table.seqcor.ed0.conn1.txt.gz](https://zenodo.org/record/1488638/files/cluster_table.seqcor.ed0.conn1.txt.gz?download=1)
+* [distance_table.seqcor.txt.gz](https://zenodo.org/record/1488638/files/distance_table.seqcor.txt.gz?download=1)
+
+Put both of these files without gunzipping in the `out/` directory. 
+Download the CIS-BP TF information: 
+
+* http://cisbp.ccbr.utoronto.ca/data/1.02/DataFiles/Bulk_downloads/EntireDataset/TF_Information_all_motifs.txt.zip. 
+
+Unzip this file.
 Edit the script `scripts/create_clustered_pfm.py` and change the following line to the right location:
 
 ```
