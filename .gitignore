@@ -1,3 +1,5 @@
 motif_database_comparison/data/**/*gz
 **/.snakemake/
 cluster_motifs/out/*gz
+**/maelstrom.out/*
+hematopoietic_enhancers/local/*
