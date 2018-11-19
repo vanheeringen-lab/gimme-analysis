@@ -25,4 +25,4 @@ notebook](https://github.com/vanheeringen-lab/gimme-analysis/blob/master/hematop
 
 ## GimmeMotifs vertebrate v5.0
 
-For pipeline that was used to create the clustered, non-redundant motif database GimmeMotifs vertebrate v5.0 can be found here: [cluster_motifs](cluster_motifs).
+The pipeline that was used to create the clustered, non-redundant motif database GimmeMotifs vertebrate v5.0 can be found here: [cluster_motifs](cluster_motifs).
