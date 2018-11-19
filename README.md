@@ -20,7 +20,8 @@ For the workflow see [de_novo_benchmark](de_novo_benchmark).
 
 ## Motif activity in hematopoietic enhancers
 
-The analysis is detailed in [this notebook](UPDATE_ME).
+The analysis is detailed in [this
+notebook](https://github.com/vanheeringen-lab/gimme-analysis/blob/master/hematopoietic_enhancers/maelstrom_hematopoietic_H3K27ac.ipynb).
 
 ## GimmeMotifs vertebrate v5.0
 
