@@ -4,7 +4,7 @@ This repository contains the analysis code of the manuscript describing the 2018
 
 > [**GimmeMotifs: an analysis framework for transcription factor motif analysis**](TODO) <br>
 Niklas Bruse, Simon J. van Heeringen<br>
-_bioRxiv_ (2018) DOI: `TODO: add DOI`
+_bioRxiv_ (2018) DOI: [10.1101/474403](https://doi.org/10.1101/474403)
 
 The manuscript source can be found at [https://github.com/simonvh/gimmemotifs-manuscript](https://github.com/simonvh/gimmemotifs-manuscript).
 
