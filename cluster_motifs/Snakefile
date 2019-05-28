@@ -27,7 +27,7 @@ rule cluster_table:
   input:
     "out/distance_table.{metric}.txt.gz"
   output:
-    "out/tmp/cluster.{metric}.ed{use_ed}.conn{use_conn}.txt.gz"  
+    "out/cluster_table.{metric}.ed{use_ed}.conn{use_conn}.txt.gz"  
   conda:
     "envs/gimme.yaml"
   shell:

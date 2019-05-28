@@ -24,9 +24,6 @@ cols = list(dists.values())[0]
 with open(outfile, "w") as f:
     f.write("\t{}\n".format("\t".join(cols)))
     for k,v in dists.items():
-        if metric == "seqcor":
-            f.write("{}\t{}\n".format(k, "\t".join(["{:.6f}".format(v[c]) for c in cols])))
-        else:
-            f.write("{}\t{}\n".format(k, "\t".join(["{:.6f}".format(v[c][0]) for c in cols])))
+        f.write("{}\t{}\n".format(k, "\t".join(["{:.6f}".format(v[c][0]) for c in cols])))
 
         
