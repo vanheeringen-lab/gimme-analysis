@@ -5,4 +5,38 @@ channels:
   - bioconda
 dependencies:
   - python=3
-  - gimmemotifs >=0.12.0
+  - scipy >=0.9.0
+  - numpy 
+  - matplotlib >=2.0
+  - jinja2
+  - pyyaml >=3.10
+  - pybedtools
+  - statsmodels
+  - scikit-learn >=0.18
+  - sklearn-contrib-lightning
+  - seaborn
+  - pysam
+  - xgboost >=0.71
+  - xdg
+  - diskcache
+  - python-xxhash
+  - six
+  - future
+  - pillow
+  - bedtools
+  - ucsc-genepredtobed
+  - ucsc-bigbedtobed
+  - homer
+  - gadem
+  - trawler
+  - weeder
+  - xxmotif
+  - meme 
+  - ghostscript
+  - tqdm
+  - genomepy
+  - ncurses
+  - feather-format
+  - pyarrow >=0.13.0
+  - pip:
+    - git+https://github.com/vanheeringen-lab/gimmemotifs.git@b3c3e7e

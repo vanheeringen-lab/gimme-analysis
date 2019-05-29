@@ -1,11 +1,15 @@
 import pandas as pd
+from gimmemotifs.config import CACHE_DIR
+import os
 
 configfile: "config.yaml"
 
 IDS, = glob_wildcards(expand("{peak_dir}", peak_dir=config["peak_dir"])[0] + "/{id}.bed.gz")
 DBS, = glob_wildcards(expand("{pfm_dir}", pfm_dir=config["pfm_dir"])[0] + "/{db}.pfm")
 
-localrules: all, final_tables, final_roc, bg_bed, fg, bg, figures
+GC_INDEX =  os.path.join(CACHE_DIR, "{}.gcfreq.100.feather".format(os.path.basename(config["genome"])))
+
+localrules: all, final_tables, final_roc, fg, bg, figures
 
 rule all:
     input: 
@@ -37,9 +41,19 @@ rule final_tables:
             df = df.join(pd.read_table(x, index_col=0))
         df.to_csv(output[0], sep="\t")
 
+rule gc_index:
+    output:
+         GC_INDEX
+    threads: 1
+    conda: "envs/gimme.yaml"
+    shell:
+        """
+        python scripts/create_gc_index.py {config[genome]}
+        """
+    
 rule final_roc:
     input:
-        expand("out/roc/{id}_roc.{{db}}.txt", id=IDS)
+        expand("out/roc/{id}_roc.{{db}}/gimme.roc.report.txt", id=IDS)
     output:
         "out/roc/{db}.{metric}.table.txt"
     run:
@@ -58,19 +72,31 @@ rule final_roc:
                 m = df.max()[wildcards.metric]
                 f.write("{}\t{}\n".format(name, m))
 
+rule check_db:
+    input: "data/pfm/{db}.pfm"
+    output: "out/{db}.check"
+    threads: 24
+    conda: "envs/gimme.yaml"
+    shell: """
+    gimme background out/{wildcards.db}.check.fa genomic -g {config[genome]} -n 10 -l 200
+    gimme scan out/{wildcards.db}.check.fa -g {config[genome]} --zscore --gc -T 
+    """
+
 rule roc:
     input:
         fg = "out/fa/{id}.fa",
         bg = "out/fa/{id}.bg.fa",
-        pfm = "data/pfm/{db}.pfm"
+        pfm = "data/pfm/{db}.pfm",
+        index = GC_INDEX,
+        check = "out/{db}.check"
     output:
-        "out/roc/{id}_roc.{db}.txt"
+        "out/roc/{id}_roc.{db}/gimme.roc.report.txt"
     threads: 24
     conda: "envs/gimme.yaml"
     shell: """
     set +u
-        echo 'starting gimme roc {input.fg} {input.pfm}'
-    gimme roc {input.fg} {input.bg} -p {input.pfm} -N 24 > {output}
+    echo 'starting gimme roc {input.fg} {input.pfm}'
+    gimme roc {input.fg} out/roc/{wildcards.id}_roc.{wildcards.db} -b {input.bg} -p {input.pfm} -N 24 --known -g {config[genome]}
     set -u
     """
 
@@ -82,23 +108,15 @@ rule fg:
        zcat {input} | shuf | tail -n {config[maxpeaks]} | sort -k1,1 -k2g,2 | bedtools getfasta -fi {config[genome]} -fo {output} -bed -
     """
 
-rule bg_bed:
-    input:  expand("{peak_dir}/{{id}}.bed.gz", peak_dir=config["peak_dir"])
-    output:  "out/bed/bg.factor.{id}.bed"
-    conda: "envs/bedtools.yaml"
-    shell:  """
-         gaps=`mktemp`
-    zcat {input} | cut -f1-3 > $gaps
-    cat {config[gaps]} | cut -f1-3 >> $gaps
-    bedtools shuffle -seed 42 -i {input} -excl $gaps -g {config[genome]}.sizes > {output} 
-         """
-
 rule bg:
-    #input:  "peaks/{id}_merged_peaks.bg.bed"
-    input:  "out/bed/bg.factor.{id}.bed"
+    input:  
+        fa = "out/fa/{id}.fa",
+        bed = expand("{peak_dir}/{{id}}.bed.gz", peak_dir=config["peak_dir"]),
+        index = GC_INDEX
     output: "out/fa/{id}.bg.fa"
-    conda: "envs/bedtools.yaml"
+    conda: "envs/gimme.yaml"
     shell:  """
-         cat {input}  | tail -n {config[maxpeaks]} | bedtools getfasta -fi {config[genome]} -fo {output} -bed -
-         """
+        gimme background {output}.bed gc -i {input.fa} -n {config[maxpeaks]} -g {config[genome]} -f BED
+        bedtools intersect -a {output}.bed -b {input.bed} -v | head -n {config[maxpeaks]} | bedtools getfasta -fi {config[genome]} -fo {output} -bed -
+    """
 
