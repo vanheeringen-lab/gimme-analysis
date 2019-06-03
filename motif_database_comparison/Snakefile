@@ -71,9 +71,10 @@ rule final_roc:
                     index_col=0).rename(columns=remap)
                 m = df.max()[wildcards.metric]
                 f.write("{}\t{}\n".format(name, m))
-
 rule check_db:
-    input: "data/pfm/{db}.pfm"
+    input: 
+        GC_INDEX,
+        expand("{pfm_dir}/{{db}}.pfm", pfm_dir=config["pfm_dir"])[0]
     output: "out/{db}.check"
     threads: 24
     resources:
@@ -81,14 +82,14 @@ rule check_db:
     conda: "envs/gimme.yaml"
     shell: """
     gimme background out/{wildcards.db}.check.fa genomic -g {config[genome]} -n 10 -l 200
-    gimme scan out/{wildcards.db}.check.fa -g {config[genome]} --zscore --gc -T  > out/{wildcards.db}.check 
+    gimme scan out/{wildcards.db}.check.fa -g {config[genome]} --zscore --gc -T  > {output} 
     """
 
 rule roc:
     input:
         fg = "out/fa/{id}.fa",
         bg = "out/fa/{id}.bg.fa",
-        pfm = "data/pfm/{db}.pfm",
+        pfm = expand("{pfm_dir}/{{db}}.pfm",pfm_dir=config["pfm_dir"])[0],
         index = GC_INDEX,
         check = "out/{db}.check"
     output:
