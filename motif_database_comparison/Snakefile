@@ -76,10 +76,12 @@ rule check_db:
     input: "data/pfm/{db}.pfm"
     output: "out/{db}.check"
     threads: 24
+    resources:
+         mem_mb=4000
     conda: "envs/gimme.yaml"
     shell: """
     gimme background out/{wildcards.db}.check.fa genomic -g {config[genome]} -n 10 -l 200
-    gimme scan out/{wildcards.db}.check.fa -g {config[genome]} --zscore --gc -T 
+    gimme scan out/{wildcards.db}.check.fa -g {config[genome]} --zscore --gc -T  > out/{wildcards.db}.check 
     """
 
 rule roc:
@@ -115,6 +117,8 @@ rule bg:
         index = GC_INDEX
     output: "out/fa/{id}.bg.fa"
     conda: "envs/gimme.yaml"
+    resources:
+         mem_mb=4000
     shell:  """
         gimme background {output}.bed gc -i {input.fa} -n {config[maxpeaks]} -g {config[genome]} -f BED
         bedtools intersect -a {output}.bed -b {input.bed} -v | head -n {config[maxpeaks]} | bedtools getfasta -fi {config[genome]} -fo {output} -bed -

@@ -4,4 +4,4 @@
 
 source activate snakemake
 snakemake --unlock
-snakemake --use-conda -j 500 --cluster-config cluster.json --cluster "sbatch -N {cluster.N} -t {cluster.time} -p {cluster.partition}" 
+snakemake --use-conda -j 500 -k --resources mem_mb=24000 --cluster-config cluster.json --cluster "sbatch -N {cluster.N} -t {cluster.time} -p {cluster.partition}" 
