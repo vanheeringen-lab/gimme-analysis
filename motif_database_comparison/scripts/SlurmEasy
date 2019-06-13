@@ -1,4 +1,4 @@
-#!/package/python/3.4.3/bin/python3
+#!/usr/bin/env python
 
 __description__="""
 SlurmEasy-0.1.1 - A wrapper around sbatch for submitting jobs to slurm.
@@ -21,7 +21,7 @@ now = datetime.datetime.now()
 QUEUE = "normal" # -p
 EMAIL_TYPE = "ALL" # --mail-type=...
 WORKING_DIR = os.getcwd() # -D
-NAME = os.getlogin() # -J
+NAME = "simonvh" #os.getlogin() # -J
 CMD_TO_LOG = False
 QUEUES = ['normal', 'short', 'fat']
 ENV_STRING = "export LC_ALL=en_US.UTF-8; export LANG=en_US.UTF-8; export LANGUAGE=en_US.UTF-8;"
@@ -40,7 +40,6 @@ def parse_args():
     parser.add_argument("-d", "--dependency", dest="dependency", metavar="INT", help="A job number to use as a dependency. Slurm will then wait until it's completed before starting this one. N.B., an integer is only labeled as being optional here to make integration with snakemake simpler.", type=int, nargs='?', const=False)
     parser.add_argument("-c", "--cmd_to_log", dest="cmd_to_log", action="store_true", help="echo bash commands to stdout (*.o) LOG file (default: '{}')".format(CMD_TO_LOG), default=CMD_TO_LOG)
     parser.add_argument("-n", "--name", dest="name", help="job name, which will also affect the log file names (default: '{}')".format(NAME), type=str, default=NAME)
-    parser.add_argument("-m", "--mem-per-cpu", dest="mem", metavar="MEMORY", help="maximum memory per core in MB if not otherwise specified (e.g. '6G', default: '{}')".format(MEM), type=str, default=MEM)
     parser.add_argument("-M", "--email", dest="email", help="Send an email to this address once the job has finished (see also --emailType) (default: ''). Note that you can specify this without an email address and {}@ie-freiburg.mpg.de will automatically be used.".format(NAME), type=str, const=True, default=False, nargs='?')
     parser.add_argument("--env_string", dest="env_string", help="Environment settings (default: '{}')".format(ENV_STRING), type=str, default=ENV_STRING)
     parser.add_argument("--emailType", dest="emailType", help="send email once the job has hit this state: BEGIN, END, FAIL or ALL finished (default: '{}')".format(EMAIL_TYPE), type=str, default=EMAIL_TYPE, choices=['BEGIN', 'END', 'FAIL', 'ALL'])
@@ -61,14 +60,14 @@ def main():
     args = parse_args()
 
     #Generate a shell script, line by line
-    script = ["#!/bin/bash", "#SBATCH N=1"]
+    script = ["#!/bin/bash", "#SBATCH -N 1"]
 
     # -w
     script.append("#SBATCH -D {}".format(args.working_dir))
 
     # -t
     if args.time:
-        script.append("#SBATCH -t {}".format(arg.time))
+        script.append("#SBATCH -t {}".format(args.time))
 
     # -n
     if args.name:
@@ -109,6 +108,17 @@ def main():
     # -d
     if args.dependency:
         script.append("#SBATCH -d {}".format(args.dependency))
+
+    script.append("""
+NEW_CACHE=$TMPDIR/cache
+mkdir -p $NEW_CACHE
+if [ -z $XDG_CACHE_HOME ]; then
+    XDG_CACHE_HOME=$HOME/.cache
+fi
+cp -r $XDG_CACHE_HOME/gimmemotifs $NEW_CACHE/
+export XDG_CACHE_HOME=$NEW_CACHE
+echo 'Using $XDG_CACHE_HOME for cache'""")
+    
 
     # Environment variables
     script.append("""
