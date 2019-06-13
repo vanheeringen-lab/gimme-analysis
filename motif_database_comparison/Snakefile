@@ -99,7 +99,7 @@ rule roc:
     shell: """
     set +u
     echo 'starting gimme roc {input.fg} {input.pfm}'
-    gimme roc {input.fg} out/roc/{wildcards.id}_roc.{wildcards.db} -b {input.bg} -p {input.pfm} -N 24 --known -g {config[genome]}
+    gimme roc {input.fg} out/roc/{wildcards.id}_roc.{wildcards.db} -b {input.bg} -p {input.pfm} -N 24 --known -g {config[genome]} --noreport
     set -u
     """
 

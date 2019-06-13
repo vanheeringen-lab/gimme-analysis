@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH -t 10:00:00
+#SBATCH -t 48:00:00
 
 source activate snakemake
 snakemake --unlock
