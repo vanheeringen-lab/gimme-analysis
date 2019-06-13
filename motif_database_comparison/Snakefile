@@ -36,9 +36,9 @@ rule final_tables:
     output:
         "out/final.{metric}.table.txt"
     run:
-        df = pd.read_table(input[0], index_col=0)
+        df = pd.read_csv(input[0], index_col=0, sep="\t")
         for x in input[1:]:
-            df = df.join(pd.read_table(x, index_col=0))
+            df = df.join(pd.read_csv(x, index_col=0, sep="\t"))
         df.to_csv(output[0], sep="\t")
 
 rule gc_index:
@@ -66,9 +66,9 @@ rule final_roc:
         with open(output[0], "w") as f:
             f.write("\t{}\n".format(wildcards.db))
             for fname in input:
-                name = os.path.split(fname)[-1].split("_")[0]
-                df = pd.read_table(fname,
-                    index_col=0).rename(columns=remap)
+                name = os.path.split(os.path.split(fname)[0])[-1].split("_")[0]
+                df = pd.read_csv(fname,
+                    index_col=0, sep="\t").rename(columns=remap)
                 m = df.max()[wildcards.metric]
                 f.write("{}\t{}\n".format(name, m))
 rule check_db:
