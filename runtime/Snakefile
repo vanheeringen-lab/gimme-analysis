@@ -1,0 +1,47 @@
+import os
+from glob import glob
+configfile: "config.yaml"
+
+tfs = [os.path.basename(f).strip().split(".")[0] for f in glob("data/*bed.gz")]
+number = [100, 200, 500, 1000, 2000]
+tfs = ["GATA3", "TP63"]
+analyses = ["small", "medium"]
+
+localrules: all, peaks, gunzip_and_shuffle
+
+rule all:
+    input: expand("out/{tf}.{n}.{analysis}.timing.txt", tf=tfs, n=number, analysis=analyses)
+    output: "out/table.txt"
+    run: 
+        rows = []
+        for fname in input:
+            values = os.path.basename(fname).split(".")
+            with open(fname) as f:
+                line = f.readline().strip()
+                user, system, elapsed, cpu, _, memory = [re.sub('[^0-9:\.].*$', '', x) for x in line.split(" ")]
+                rows.append([values[0], values[1], values[2], user, system, elapsed, cpu, memory])
+        with open(output[0], "w") as f:
+            print("tf\tnumber\tanalysis\tuser\tsystem\telapsed\tcpu\tmemory", file=f)
+            for row in rows:
+                print("\t".join(row), file=f)
+
+rule time:
+    input: "out/{tf}.{n}.bed" 
+    output: "out/{tf}.{n}.{analysis}.timing.txt"
+    conda: "envs/gimme.yaml"
+    threads: 16
+    shell: """
+    /usr/bin/time --output={output} gimme motifs {input} -g {config[genome]} -a {wildcards.analysis} -t {config[tools]} -n out/gimme.{wildcards.tf}.{wildcards.n} -N {threads}
+    """
+
+rule peaks:
+    input: "out/{tf}.bed"
+    output: "out/{tf}.{n}.bed"
+    shell: """
+    head -n {wildcards.n} {input} > {output}
+    """
+
+rule gunzip_and_shuffle:
+    input: "data/{tf}.bed.gz"
+    output: "out/{tf}.bed"
+    shell: "zcat {input} | shuf > {output}"

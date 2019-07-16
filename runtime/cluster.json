@@ -1,0 +1,12 @@
+{
+    "__default__" :
+    {
+        "time" : "00:10:00",
+        "partition" : "short"
+    },
+    "time" :
+    {
+        "time" : "05:00:00",
+        "partition" : "normal"
+    }
+}
