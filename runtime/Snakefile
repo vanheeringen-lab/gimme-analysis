@@ -3,9 +3,8 @@ from glob import glob
 configfile: "config.yaml"
 
 tfs = [os.path.basename(f).strip().split(".")[0] for f in glob("data/*bed.gz")]
-number = [100, 200, 500, 1000, 2000]
-tfs = ["GATA3", "TP63"]
-analyses = ["small", "medium"]
+number = [100, 500, 1000, 5000, 10000, 50000, 100000]
+analyses = ["small", "medium", "large", "xl"]
 
 localrules: all, peaks, gunzip_and_shuffle
 
@@ -29,7 +28,7 @@ rule time:
     input: "out/{tf}.{n}.bed" 
     output: "out/{tf}.{n}.{analysis}.timing.txt"
     conda: "envs/gimme.yaml"
-    threads: 16
+    threads: 24
     shell: """
     /usr/bin/time --output={output} gimme motifs {input} -g {config[genome]} -a {wildcards.analysis} -t {config[tools]} -n out/gimme.{wildcards.tf}.{wildcards.n} -N {threads}
     """
