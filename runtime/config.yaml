@@ -1,5 +1,5 @@
 # Reference genome
-genome: "/data/genomes/hg38/hg38.fa"
+genome: "/home/simonvh/data/genomes/hg38/hg38.fa"
 # size of region to look for motifs
 size: 100
 # Which de novo motif prediction tools to compare
