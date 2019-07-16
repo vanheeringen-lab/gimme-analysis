@@ -1,0 +1,7 @@
+# Reference genome
+genome: "/data/genomes/hg38/hg38.fa"
+# size of region to look for motifs
+size: 100
+# Which de novo motif prediction tools to compare
+#tools: MDmodule,Homer,BioProspector,MEME,MEMEW,GADEM,MotifSampler,trawler,Improbizer,Posmo,ChIPMunk,AMD,HMS,XXmotif,Weeder
+tools: MDmodule,Homer,BioProspector,MEME
