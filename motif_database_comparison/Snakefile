@@ -9,7 +9,7 @@ DBS, = glob_wildcards(expand("{pfm_dir}", pfm_dir=config["pfm_dir"])[0] + "/{db}
 
 GC_INDEX =  os.path.join(CACHE_DIR, "{}.gcfreq.100.feather".format(os.path.basename(config["genome"])))
 
-localrules: all, final_tables, final_roc, fg, bg, figures
+localrules: all, final_tables, final_roc, fg, bg, figures, gc_index, check_db
 
 rule all:
     input: 
@@ -99,7 +99,7 @@ rule roc:
     shell: """
     set +u
     echo 'starting gimme roc {input.fg} {input.pfm}'
-    gimme roc {input.fg} out/roc/{wildcards.id}_roc.{wildcards.db} -b {input.bg} -p {input.pfm} -N 24 --known -g {config[genome]}
+    gimme roc {input.fg} out/roc/{wildcards.id}_roc.{wildcards.db} -b {input.bg} -p {input.pfm} -N 24 --known -g {config[genome]} --noreport
     set -u
     """
 
