@@ -1,6 +1,11 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH -t 10:00:00
+#SBATCH -t 02:30:00
+#SBATCH -p normal
 
-source activate case_study1
-snakemake -j 500 --cluster-config cluster.json --cluster "sbatch -N {cluster.N} -t {cluster.time} -p {cluster.partition}" 
+. $HOME/miniconda3/etc/profile.d/conda.sh
+conda activate
+conda activate snakemake
+snakemake --unlock
+
+snakemake -j 10 --use-conda --cluster-config cluster.json --cluster "sbatch -N 1 -t {cluster.time} -p {cluster.partition}" 

@@ -1,0 +1,17 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3
+  - gimmemotifs 
+  - dinamo
+  - tqdm
+  - pytorch
+  - torchvision
+  - biopython
+  - openssl=1.0
+  - pyarrow
+  - pip
+  - pip:
+    - git+https://github.com/vanheeringen-lab/gimmemotifs.git@250a323

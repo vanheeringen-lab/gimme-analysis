@@ -9,6 +9,7 @@ fnames = [os.path.splitext(os.path.basename(f).strip())[0] for f in fnames]
 rule all:
     input: expand("out/{bla}.txt", bla=fnames)
     output: "out/figure4a.svg", "out/figure4b.svg", "out/figure4c.svg"
+    conda: "envs/gimme.yaml"
     shell: """
     python scripts/figure4_benchmark_de_novo_motif.py {config[tools]}
     """
@@ -16,6 +17,7 @@ rule all:
 rule stats:
     input: expand("{peak_file}", peak_file=config["peak_file"])
     output: "out/{id}.txt"
+    conda: "envs/gimme.yaml"
     shell: """
     peaks=`grep {wildcards.id} {input}`
     scripts/benchmark  $peaks {config[genome]} {output} -t {config[tools]} -s {config[size]} -n {config[maxpeaks]}
