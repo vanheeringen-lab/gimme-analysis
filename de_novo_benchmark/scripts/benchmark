@@ -111,7 +111,11 @@ inbed, bgfa = prepare_bed(
     size=args.size
     )
 
-metrics = ["roc_auc", "mncp", "recall_at_fdr"]
+metrics = {
+        "roc_auc":0.5,
+        "mncp": 0,
+        "recall_at_fdr": 0,
+        }
 
 params ={
         "tools":args.tools,
@@ -127,10 +131,20 @@ outdir = mkdtemp()
 print("Run motif discovery")
 gimme_motifs(inbed, outdir, params, filter_significant=False, cluster=False, create_report=False)
 print("Getting stats")
-statsfile = os.path.join(outdir, "intermediate/stats.user.txt")
-stats = pd.read_table(statsfile)
-stats["tool"] = stats["Motif"].str.split("_", expand=True).iloc[:,2]
-summary = stats.groupby("tool").max()[metrics]
+try:
+    statsfile = os.path.join(outdir, "intermediate/stats.custom.txt")
+    stats = pd.read_table(statsfile)
+    stats["tool"] = stats["Motif"].str.split("_", expand=True).iloc[:,2]
+    summary = stats.groupby("tool").max()[list(metrics.keys())]
+except:
+    summary = pd.DataFrame(columns=["tool"]+ metric_keys).set_index("tool")
+
+print(summary)
+
+metric_keys = list(metrics.keys())  
+for tool in args.tools.split(","):
+    if tool not in summary.index:
+        summary.loc[tool] = [metrics[m] for m in metric_keys]
 
 shutil.rmtree(outdir)
 summary["source"] = href
